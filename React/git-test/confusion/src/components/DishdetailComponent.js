@@ -5,61 +5,59 @@ import {
   CardTitle
 } from 'reactstrap';
 
-class DishDetail extends Component {
-  constructor(props) {
-    super(props);
-  }
+function RenderDish({dish}) {
+  return (
+      <Card>
+        <CardImg top src={dish.image} alt={dish.name}/>
+        <CardBody>
+          <CardTitle>{dish.name}</CardTitle>
+          <CardText>{dish.description}</CardText>
+        </CardBody>
+      </Card>
+  )
+}
 
-  renderDish(dish) {
+function RenderComments({comments}) {
+  const commentsArr = comments.map((comment) => {
     return (
-        <Card>
-          <CardImg top src={this.props.selectedDish.image} alt={this.props.selectedDish.name}/>
-          <CardBody>
-            <CardTitle>{this.props.selectedDish.name}</CardTitle>
-            <CardText>{this.props.selectedDish.description}</CardText>
-          </CardBody>
-        </Card>
+        <li>
+          <p>{comment.comment}</p>
+          <p>-- {comment.author} , {(new Date(comment.date)).toLocaleString('en-US',{month: 'short', day:'numeric', year:'numeric'})}</p>
+        </li>
     )
-  }
+  })
 
-  renderComments(dishComments) {
-    const comments = dishComments.map((comment) => {
-      return (
-          <li>
-            <p>{comment.comment}</p>
-            <p>-- {comment.author} , {(new Date(comment.date)).toLocaleString('en-US',{month: 'short', day:'numeric', year:'numeric'})}</p>
-          </li>
-      )
-    })
+  return (
+      <>
+        <h4>Comments</h4>
+        <ul className='list-unstyled'>
+          {commentsArr}
+        </ul>
+      </>
+  )
+}
 
+const DishDetail = (props) => {
+  if (props.dish != null) {
     return (
-        <>
-          <h4>Comments</h4>
-          <ul className='list-unstyled'>
-            {comments}
-          </ul>
-        </>
-    )
-  }
-
-  render() {
-    if (this.props.selectedDish != null) {
-      return (
+        <div className="container">
           <div className='row'>
             <div className='col-12 col-md-5 m-1'>
-              {this.renderDish(this.props.selectedDish)}
+              <RenderDish dish={props.dish} />
             </div>
             <div className='col-12 col-md-5 m-1'>
-              {this.renderComments(this.props.selectedDish.comments)}
+              <RenderComments comments={props.dish.comments} />
             </div>
           </div>
-      )
-    } else {
-      return (
-          <div/>
-      )
-    }
+        </div>
+
+    )
+  } else {
+    return (
+        <div/>
+    )
   }
 }
+
 
 export default DishDetail;
