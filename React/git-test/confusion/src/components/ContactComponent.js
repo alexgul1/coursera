@@ -33,41 +33,6 @@ class Contact extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-
-  validate(firstname, lastname, telnum, email) {
-    const errors ={
-      firstname: '',
-      lastname: '',
-      telnum: '',
-      email: ''
-    };
-
-    if(this.state.touched.firstname && firstname.length < 3){
-      errors.firstname = "First Name should be >= 3 characters";
-    } else if(this.state.touched.firstname && firstname.length > 10) {
-      errors.firstname = "First Name should be <= 10 characters";
-    }
-
-    if(this.state.touched.lastname && lastname.length < 3){
-      errors.lastname = "First Name should be >= 3 characters";
-    } else if(this.state.touched.lastname && lastname.length > 10) {
-      errors.lastname = "First Name should be <= 10 characters";
-    }
-
-    const reg = /^\d+$/;
-    if(this.state.touched.telnum && !reg.test(telnum)) {
-      errors.telnum = "Tel. Number should contain only numbers";
-    }
-
-    if(this.state.touched.email && email.split('').filter(x => x === "@").length !== 1) {
-      errors.email = "Email should contain a @";
-    }
-
-    return errors;
-  }
-
-
-
   handleSubmit(values) {
     console.log('Current State is: ' + JSON.stringify(values));
     alert('Current State is: ' + JSON.stringify(values));
@@ -75,8 +40,6 @@ class Contact extends Component {
   }
 
   render() {
-    const errors = this.validate(this.state.firstname, this.state.lastname, this.state.telnum, this.state.email);
-    console.log(errors);
     return (
         <div className="container">
           <div className="row">
@@ -126,7 +89,7 @@ class Contact extends Component {
                 <Row className="form-group">
                   <Label htmlFor="firstname" md={2}>First Name</Label>
                   <Col md={10}>
-                    <Control.text model=".firstname" id="firstname" name="firstname"
+                    <Control.text model=".firstname" name="firstname"
                            placeholder="First Name"
                            className="form-control"
                                   validators={{
@@ -145,7 +108,7 @@ class Contact extends Component {
                 <Row className="form-group">
                   <Label htmlFor="lastname" md={2}>Last Name</Label>
                   <Col md={10}>
-                    <Control.text model=".lastname" id="lastname" name="lastname"
+                    <Control.text model=".lastname" name="lastname"
                            placeholder="Last Name" className="form-control"
                                   validators={{
                                     required, minLength: minLength(3), maxLength: maxLength(15)
@@ -216,7 +179,7 @@ class Contact extends Component {
                 <Row className="form-group">
                   <Label htmlFor="message" md={2}>Your Feedback</Label>
                   <Col md={10}>
-                    <Control.textarea model=".message" id="message" name="message"
+                    <Control.textarea model=".message" name="message"
                            rows="12" className="form-control" />
                   </Col>
                 </Row>
