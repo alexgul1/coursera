@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from "react-router-dom";
 import {Control, Errors, LocalForm} from "react-redux-form";
-
+import {FadeTransform, Fade, Stagger} from "react-animation-components";
 import {Breadcrumb, BreadcrumbItem, Button, Col, Label, Media, Modal, ModalBody, ModalHeader, Row} from 'reactstrap';
 import {
   Card, CardImg, CardImgOverlay, CardText, CardBody,
@@ -9,7 +9,7 @@ import {
 } from 'reactstrap';
 
 
-import { Loading } from "./LoadingComponent";
+import {Loading} from "./LoadingComponent";
 import {baseUrl} from "../shared/baseUrl";
 
 const maxLength = (len) => (val) => !val || (val.length <= len);
@@ -17,23 +17,31 @@ const minLength = (len) => (val) => val && (val.length >= len);
 
 function RenderDish({dish}) {
   return (
-      <Card>
-        <CardImg top src={baseUrl + dish.image} alt={dish.name}/>
-        <CardBody>
-          <CardTitle>{dish.name}</CardTitle>
-          <CardText>{dish.description}</CardText>
-        </CardBody>
-      </Card>
+      <FadeTransform in transformProps={{exitTransform: "scale(0.5) translateY(-50%)"}}>
+        <Card>
+          <CardImg top src={baseUrl + dish.image} alt={dish.name}/>
+          <CardBody>
+            <CardTitle>{dish.name}</CardTitle>
+            <CardText>{dish.description}</CardText>
+          </CardBody>
+        </Card>
+      </FadeTransform>
   )
 }
 
 function RenderComments({comments, postComment, dishId}) {
   const commentsArr = comments.map((comment) => {
     return (
-        <li>
-          <p>{comment.comment}</p>
-          <p>-- {comment.author} , {(new Date(comment.date)).toLocaleString('en-US',{month: 'short', day:'numeric', year:'numeric'})}</p>
-        </li>
+        <Fade in>
+          <li key={comment.id}>
+            <p>{comment.comment}</p>
+            <p>-- {comment.author} , {(new Date(comment.date)).toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            })}</p>
+          </li>
+        </Fade>
     )
   })
 
@@ -41,7 +49,9 @@ function RenderComments({comments, postComment, dishId}) {
       <>
         <h4>Comments</h4>
         <ul className='list-unstyled'>
-          {commentsArr}
+          <Stagger in>
+            {commentsArr}
+          </Stagger>
         </ul>
         <CommentForm dishId={dishId} postComment={postComment}/>
       </>
@@ -53,11 +63,11 @@ const DishDetail = (props) => {
     return (
         <div className="container">
           <div className="row">
-            <Loading />
+            <Loading/>
           </div>
         </div>
     )
-  } else if(props.errMess) {
+  } else if (props.errMess) {
     return (
         <div className="container">
           <div className="row">
@@ -65,7 +75,7 @@ const DishDetail = (props) => {
           </div>
         </div>
     )
-  } else if(props.dish != null){
+  } else if (props.dish != null) {
     return (
         <div className="container">
           <div className="row">
@@ -81,7 +91,7 @@ const DishDetail = (props) => {
           </div>
           <div className="row">
             <div className="col-12 col-md-5 m-1">
-              <RenderDish dish={props.dish} />
+              <RenderDish dish={props.dish}/>
             </div>
             <div className="col-12 col-md-5 m-1">
               <RenderComments comments={props.comments} postComment={props.postComment} dishId={props.dish.id}/>
@@ -118,10 +128,10 @@ class CommentForm extends Component {
   }
 
   render() {
-    return(
+    return (
         <div>
           <Button outline onClick={this.toggleModal}>
-            <span className="fa fa-pencil fa-lg" /> Submit Comment
+            <span className="fa fa-pencil fa-lg"/> Submit Comment
           </Button>
           <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
             <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
@@ -160,7 +170,7 @@ class CommentForm extends Component {
                 <Row className="form-group">
                   <Col>
                     <Label htmlFor="comment">Comment</Label>
-                    <Control.textarea model=".comment" rows="6" name="comment" className="form-control" />
+                    <Control.textarea model=".comment" rows="6" name="comment" className="form-control"/>
                   </Col>
                 </Row>
                 <Row className="form-group">
