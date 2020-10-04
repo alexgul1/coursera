@@ -10,6 +10,7 @@ import {
 
 
 import { Loading } from "./LoadingComponent";
+import {baseUrl} from "../shared/baseUrl";
 
 const maxLength = (len) => (val) => !val || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
@@ -17,7 +18,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
 function RenderDish({dish}) {
   return (
       <Card>
-        <CardImg top src={dish.image} alt={dish.name}/>
+        <CardImg top src={baseUrl + dish.image} alt={dish.name}/>
         <CardBody>
           <CardTitle>{dish.name}</CardTitle>
           <CardText>{dish.description}</CardText>
@@ -26,7 +27,7 @@ function RenderDish({dish}) {
   )
 }
 
-function RenderComments({comments, addComment, dishId}) {
+function RenderComments({comments, postComment, dishId}) {
   const commentsArr = comments.map((comment) => {
     return (
         <li>
@@ -42,7 +43,7 @@ function RenderComments({comments, addComment, dishId}) {
         <ul className='list-unstyled'>
           {commentsArr}
         </ul>
-        <CommentForm dishId={dishId} addComment={addComment}/>
+        <CommentForm dishId={dishId} postComment={postComment}/>
       </>
   )
 }
@@ -83,7 +84,7 @@ const DishDetail = (props) => {
               <RenderDish dish={props.dish} />
             </div>
             <div className="col-12 col-md-5 m-1">
-              <RenderComments comments={props.comments} addComment={props.addComment} dishId={props.dish.id}/>
+              <RenderComments comments={props.comments} postComment={props.postComment} dishId={props.dish.id}/>
             </div>
           </div>
         </div>
@@ -113,7 +114,7 @@ class CommentForm extends Component {
 
   handleSubmit(values) {
     this.toggleModal();
-    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+    this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
   }
 
   render() {
@@ -148,7 +149,7 @@ class CommentForm extends Component {
                                     maxLength: maxLength(15)
                                   }}
                     />
-                    <Errors className="text-danger" model=".your-name" show="touched"
+                    <Errors className="text-danger" model=".author" show="touched"
                             messages={{
                               minLength: 'Must be greater than 2 characters',
                               maxLength: 'Must be 15 characters or less'
