@@ -224,23 +224,29 @@ dishRouter.route('/:dishId/comments/:commentId')
       Dishes.findById(req.params.dishId)
           .then((dish) => {
                 if (dish !== null && dish.comments.id(req.params.commentId) !== null) {
-                  if (req.body.rating) {
-                    dish.comments.id(req.params.commentId).rating = req.body.rating;
-                  }
-                  if (req.body.comment) {
-                    dish.comments.id(req.params.commentId).comment = req.body.comment;
-                  }
-                  dish.save()
-                      .then((dish) => {
-                        Dishes.findById(dish._id)
-                            .populate('comments.author')
-                            .then((dish) => {
-                              res.statusCode = 200;
-                              res.setHeader('Content-Type', 'application/json');
-                              res.json(dish);
-                            })
+                  if(!req.user._id.equals(dish.comments.id(req.params.commentId).author)) {
+                    err = new Error(`You are not authorized to update this comment!`);
+                    err.status = 403;
+                    return next(err);
+                  } else {
+                    if (req.body.rating) {
+                      dish.comments.id(req.params.commentId).rating = req.body.rating;
+                    }
+                    if (req.body.comment) {
+                      dish.comments.id(req.params.commentId).comment = req.body.comment;
+                    }
+                    dish.save()
+                        .then((dish) => {
+                          Dishes.findById(dish._id)
+                              .populate('comments.author')
+                              .then((dish) => {
+                                res.statusCode = 200;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json(dish);
+                              })
 
-                      })
+                        })
+                  }
                 } else if (dish === null) {
                   err = new Error(`Dish ${req.params.dishId} not found`);
                   err.status = 404;
@@ -262,17 +268,23 @@ dishRouter.route('/:dishId/comments/:commentId')
       Dishes.findById(req.params.dishId)
           .then((dish) => {
             if (dish !== null && dish.comments.id(req.params.commentId) !== null) {
-              dish.comments.id(req.params.commentId).remove();
-              dish.save()
-                  .then((dish) => {
-                    Dishes.findById(dish._id)
-                        .populate('comments.author')
-                        .then((dish) => {
-                          res.statusCode = 200;
-                          res.setHeader('Content-Type', 'application/json');
-                          res.json(dish);
-                        })
-                  })
+              if(!req.user._id.equals(dish.comments.id(req.params.commentId).author)) {
+                err = new Error(`You are not authorized to delete this comment!`);
+                err.status = 403;
+                return next(err);
+              } else {
+                dish.comments.id(req.params.commentId).remove();
+                dish.save()
+                    .then((dish) => {
+                      Dishes.findById(dish._id)
+                          .populate('comments.author')
+                          .then((dish) => {
+                            res.statusCode = 200;
+                            res.setHeader('Content-Type', 'application/json');
+                            res.json(dish);
+                          })
+                    })
+              }
             } else if (dish === null) {
               err = new Error(`Dish ${req.params.dishId} not found`);
               err.status = 404;
